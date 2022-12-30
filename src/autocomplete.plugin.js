@@ -1,1 +1,189 @@
+/**
+ * @name MessageAutocomplete
+ * @author ghwosty
+ * @description A plugin that autofills and autocompletes messages.
+ * @version 0.0.1
+ */
 
+module.exports = meta => {
+    var currentIndex = 0;
+    // Elements
+    const acMessageContainer = document.createElement("div");
+    acMessageContainer.classList.add("autocomplete-message-container");
+    if (document.body.contains(document.querySelector(".form-3gdLxP"))) document.querySelector(".form-3gdLxP").prepend(acMessageContainer);
+
+    // Eventlisteners
+    const messageCheck = document.addEventListener("keydown", (e) => {
+        const keycode = e.keyCode;
+        if (currentIndex < 0) currentIndex = 0;
+        if (document.activeElement == document.querySelector(".editor-H2NA06")) {
+            setTimeout(() => {
+                if (document.body.contains(document.querySelector(".emptyText-1o0WH_"))) {
+                    acMessageContainer.style.display = "none"
+                    document.querySelectorAll(".autoc-option").forEach(e => { e.style.background = "transparent" })
+                } else {
+                    acMessageContainer.style.display = "block"
+                    var aco_t = "";
+                    var actual = 0;
+                    for (let i = 0; i < settings.autoCompleteOptions.length; i++) {
+                        const option = settings.autoCompleteOptions[i].toString();
+                        const text = document.querySelector(".editor-H2NA06").innerText.replaceAll("\n", "").toString();
+                        if (settings.autoCompleteOptions[i] == null) continue;
+                        if (option == text) continue;
+                        if (option.startsWith(text)) {
+                            if (actual == 0) {
+                                aco_t += aco_t += "<span style='fontWeight: bold; color: white; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br><span class='autoc-option' index ='" + i + "' style='background-color: #03a1fc;'>" + settings.autoCompleteOptions[i] + "</span>"
+                                actual++;
+                                continue
+                            }
+                            aco_t += "<br><span class='autoc-option' index ='" + i + "'>" + settings.autoCompleteOptions[i] + "</span>"
+                            actual++;
+                            continue
+                        }
+                    }
+                    if (aco_t == "") {
+                        acMessageContainer.style.display = "none";
+                    } else {
+                        acMessageContainer.innerHTML = aco_t;
+                    }
+                }
+
+            }, 150)
+        }
+        if (keycode == 9) {
+            if (acMessageContainer.style.display == "block") {
+                e.preventDefault();
+                var selectedText = "";
+                document.querySelectorAll(".autoc-option").forEach(ele => {
+                    if (ele.style.backgroundColor == "blue") {
+                        selectedText = ele.innerText;
+                    }
+                })
+                document.querySelector(".editor-H2NA06").innerText = selectedText;
+                acMessageContainer.style.display = "none"
+            }
+        } else if (keycode == 38) {
+            if (acMessageContainer.style.display == "block") {
+                e.preventDefault();
+                currentIndex = currentIndex - 1;
+                document.querySelectorAll(".autoc-option").forEach(ele => {
+                    if (ele.getAttribute("index") == currentIndex) {
+                        document.querySelectorAll(".autoc-option").forEach(e => { e.style.background = "transparent" })
+                        ele.style.backgroundColor = "#03a1fc;"
+                    }
+                })
+            }
+        } else if (keycode == 40) {
+            if (acMessageContainer.style.display == "block") {
+                e.preventDefault();
+                currentIndex++;
+                document.querySelectorAll(".autoc-option").forEach(ele => {
+                    if (ele.getAttribute("index") == currentIndex) {
+                        document.querySelectorAll(".autoc-option").forEach(e => { e.style.background = "transparent" })
+                        ele.style.backgroundColor = "#03a1fc;"
+                    }
+                })
+            }
+        }
+    })
+
+    const defaults = {
+        autoCompleteOptions: [],
+    }
+
+    const settings = {};
+    const stored_data = BdApi.loadData(meta.name, "settings");
+    Object.assign(settings, defaults, stored_data);
+
+    function injectCss() {
+        BdApi.injectCSS(meta.name, `
+        .autocomplete-message-container {
+            color: white;
+            background-color: #2F3136;
+            position: absolute;
+            z-index: 999;
+            padding: 10px;
+            bottom: 110%;
+            overflow: scroll;
+            width: 400px;
+            display: none;
+            transition: 1s;
+        }
+        .autocomplete-message-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .autoc-option {
+            margin-bottom: 10px;
+        }
+        `)
+    }
+    injectCss();
+    return {
+        start: () => {
+
+        },
+        stop: () => {
+            acMessageContainer.remove();
+            BdApi.clearCSS(meta.name)
+            document.removeEventListener("keydown", messageCheck);
+        },
+        getSettingsPanel: () => {
+            const panel = document.createElement("div");
+            panel.innerHTML = `<h1 style="color: white; font-weight: bold;">Autocomplete Options</h1>`
+
+            const autocOptions = document.createElement("div");
+            const aco_l = document.createElement("span");
+            aco_l.innerHTML = "<br>Autocomplete words (seperated by a new line)<br><br>";
+            aco_l.style.verticalAlign = "middle";
+            aco_l.style.marginRight = "15px";
+            aco_l.style.color = "white";
+            const aco_i = document.createElement("textarea");
+            aco_i.style.verticalAlign = "middle"
+            aco_i.style.width = "250px"
+            aco_i.style.height = "250px"
+            aco_i.style.fontSize = "14px"
+            const aco_b = document.createElement("br");
+            const aco_a = document.createElement("button");
+            aco_a.innerHTML = "Apply"
+            aco_a.style.cursor = "pointer"
+            aco_a.style.color = "White"
+            aco_a.style.width = "150px"
+            aco_a.style.height = "30px"
+            aco_a.style.marginTop = "15px"
+            aco_a.style.fontSize = "15px"
+            aco_a.style.borderRadius = "5%"
+            aco_a.style.backgroundColor = "#3e82e5"
+            autocOptions.append(aco_l, aco_i, aco_b, aco_b, aco_a);
+
+            aco_a.addEventListener("click", () => {
+                const autoCompleteOptions = aco_i.value.split("\n")
+                for (let i = 0; i < autoCompleteOptions.length; i++) {
+                    if (autoCompleteOptions[i].replaceAll(" ", "") == "") delete autoCompleteOptions[i]
+                }
+                console.log(autoCompleteOptions)
+                settings.autoCompleteOptions = autoCompleteOptions;
+                BdApi.saveData(meta.name, "settings", settings);
+                BdApi.alert(meta.name, "Settings applied.")
+            })
+
+            var aco_t = "";
+            for (let i = 0; i < settings.autoCompleteOptions.length; i++) {
+                if (settings.autoCompleteOptions[i] == null) continue;
+                if (i == 0) {
+                    aco_t += settings.autoCompleteOptions[i]
+                    continue
+                }
+                aco_t += "\n" + settings.autoCompleteOptions[i]
+            }
+            aco_i.value = aco_t;
+
+            panel.append(autocOptions)
+            return panel;
+        },
+        onSwitch: () => {
+            acMessageContainer.style.display = "none";
+            document.querySelector(".form-3gdLxP").prepend(acMessageContainer);
+        },
+    }
+}
