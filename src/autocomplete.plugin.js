@@ -2,10 +2,13 @@
  * @name MessageAutocomplete
  * @author ghwosty
  * @description A plugin that autofills and autocompletes messages.
- * @version 0.0.1
+ * @version 1.0.0
  */
 
 module.exports = meta => {
+   
+    
+    var actual = 0;
     var currentIndex = 0;
     // Elements
     const acMessageContainer = document.createElement("div");
@@ -14,9 +17,11 @@ module.exports = meta => {
 
     // Eventlisteners
     const messageCheck = document.addEventListener("keydown", (e) => {
+
+        var currentExist = 0;
+
         const keycode = e.keyCode;
-        if (currentIndex < 0) currentIndex = 0;
-        if (document.activeElement == document.querySelector(".editor-H2NA06")) {
+        if (document.activeElement == document.querySelector(".editor-H2NA06") && keycode != 9 && keycode != 38 && keycode != 40) {
             setTimeout(() => {
                 if (document.body.contains(document.querySelector(".emptyText-1o0WH_"))) {
                     acMessageContainer.style.display = "none"
@@ -24,7 +29,6 @@ module.exports = meta => {
                 } else {
                     acMessageContainer.style.display = "block"
                     var aco_t = "";
-                    var actual = 0;
                     for (let i = 0; i < settings.autoCompleteOptions.length; i++) {
                         const option = settings.autoCompleteOptions[i].toString();
                         const text = document.querySelector(".editor-H2NA06").innerText.replaceAll("\n", "").toString();
@@ -32,55 +36,83 @@ module.exports = meta => {
                         if (option == text) continue;
                         if (option.startsWith(text)) {
                             if (actual == 0) {
-                                aco_t += aco_t += "<span style='fontWeight: bold; color: white; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br><span class='autoc-option' index ='" + i + "' style='background-color: #03a1fc;'>" + settings.autoCompleteOptions[i] + "</span>"
+                                aco_t += "<span class='autoc-option' index ='" + actual + "' style='background-color: #03a1fc;'>" + settings.autoCompleteOptions[i] + "</span>"
                                 actual++;
                                 continue
                             }
-                            aco_t += "<br><span class='autoc-option' index ='" + i + "'>" + settings.autoCompleteOptions[i] + "</span>"
+                            aco_t += "<br><span class='autoc-option' index ='" + actual + "'>" + settings.autoCompleteOptions[i] + "</span>"
                             actual++;
                             continue
                         }
                     }
                     if (aco_t == "") {
                         acMessageContainer.style.display = "none";
+                        actual = 0;
+                        currentExist = 0;
+                        currentIndex = 0;
                     } else {
-                        acMessageContainer.innerHTML = aco_t;
+                        acMessageContainer.innerHTML = "<span style='fontWeight: bold; color: #03a1fc;; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br>" + aco_t;
+                        actual = 0;
+                        currentExist = 0;
                     }
                 }
 
             }, 150)
         }
+        document.querySelectorAll(".autoc-option").forEach(ele => {
+            currentExist++;
+        })
+
+
+
         if (keycode == 9) {
             if (acMessageContainer.style.display == "block") {
                 e.preventDefault();
                 var selectedText = "";
                 document.querySelectorAll(".autoc-option").forEach(ele => {
-                    if (ele.style.backgroundColor == "blue") {
-                        selectedText = ele.innerText;
+                    console.log(ele.style.backgroundColor)
+                    if (ele.style.backgroundColor == "rgb(3, 161, 252)") {
+                        selectedText = ele.innerText.replace(document.querySelector(".editor-H2NA06").innerText.replaceAll("\n", ""), "");
+                        return
                     }
                 })
-                document.querySelector(".editor-H2NA06").innerText = selectedText;
+                const InsertText = (() => {
+                    let ComponentDispatch;
+                    return (content) => {
+                        if (!ComponentDispatch) ComponentDispatch = BdApi.Webpack.getModule(m => m.dispatchToLastSubscribed && m.emitter.listeners('INSERT_TEXT').length, { searchExports: true });
+                        ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
+                            plainText: content
+                        });
+                    }
+                })();
+                InsertText(selectedText);
                 acMessageContainer.style.display = "none"
             }
         } else if (keycode == 38) {
             if (acMessageContainer.style.display == "block") {
                 e.preventDefault();
                 currentIndex = currentIndex - 1;
+                if (currentIndex < 0) currentIndex = 0;
+                if (currentIndex >= currentExist) currentIndex = currentExist - 1;
+                console.log(currentIndex + " up arrow")
                 document.querySelectorAll(".autoc-option").forEach(ele => {
                     if (ele.getAttribute("index") == currentIndex) {
                         document.querySelectorAll(".autoc-option").forEach(e => { e.style.background = "transparent" })
-                        ele.style.backgroundColor = "#03a1fc;"
+                        ele.style.backgroundColor = "#03a1fc"
                     }
                 })
             }
         } else if (keycode == 40) {
             if (acMessageContainer.style.display == "block") {
                 e.preventDefault();
-                currentIndex++;
+                currentIndex = currentIndex + 1;
+                if (currentIndex < 0) currentIndex = 0;
+                if (currentIndex >= currentExist) currentIndex = currentExist - 1;
+                console.log(currentIndex + " down arrow")
                 document.querySelectorAll(".autoc-option").forEach(ele => {
                     if (ele.getAttribute("index") == currentIndex) {
                         document.querySelectorAll(".autoc-option").forEach(e => { e.style.background = "transparent" })
-                        ele.style.backgroundColor = "#03a1fc;"
+                        ele.style.backgroundColor = "#03a1fc"
                     }
                 })
             }
