@@ -6,4 +6,4 @@ A BetterDiscord plugin that shows an autocomplete bar above the message input fo
 
 <h2>Settings</h2>
 
-Plugin includes a simple settings menu where you can add the words to autocomplete.
+The plugin includes a simple settings menu where you can add the words to autocomplete.
