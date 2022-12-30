@@ -1,7 +1,7 @@
 /**
  * @name MessageAutocomplete
  * @author ghwosty
- * @description A plugin that autofills and autocompletes messages.
+ * @description A plugin that autocompletes messages.
  * @version 1.0.0
  */
 
