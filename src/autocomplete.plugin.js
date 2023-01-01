@@ -2,7 +2,7 @@
  * @name MessageAutocomplete
  * @author ghwosty
  * @description A plugin that autocompletes messages.
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 module.exports = meta => {
@@ -197,6 +197,7 @@ module.exports = meta => {
                 settings.autoCompleteOptions = autoCompleteOptions;
                 BdApi.saveData(meta.name, "settings", settings);
                 BdApi.alert(meta.name, "Settings applied.")
+                acAmount.innerHTML = "You have <i>" + settings.autoCompleteOptions.length + "</i> autocomplete options."
             })
 
             var aco_t = "";
@@ -210,7 +211,11 @@ module.exports = meta => {
             }
             aco_i.value = aco_t;
 
-            panel.append(autocOptions)
+            const acAmount = document.createElement("p");
+            acAmount.innerHTML = "You have <i>" + settings.autoCompleteOptions.length + "</i> autocomplete options."
+            acAmount.style.color = "white"
+
+            panel.append(autocOptions, acAmount)
             return panel;
         },
         onSwitch: () => {
