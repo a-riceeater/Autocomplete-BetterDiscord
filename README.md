@@ -2,7 +2,7 @@
 
 A BetterDiscord plugin that shows an autocomplete bar above the message input for faster texting.
 <br><br>
-<img src="image_2022-12-30_140722945.png">
+<img src="image_2023-01-02_090936182.png">
 
 <h2>Settings</h2>
 
