@@ -51,7 +51,7 @@ module.exports = meta => {
                         currentExist = 0;
                         currentIndex = 0;
                     } else {
-                        acMessageContainer.innerHTML = "<span style='fontWeight: bold; color: #03a1fc;; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br>" + aco_t;
+                        acMessageContainer.innerHTML = "<span style='color: #03a1fc; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br>" + aco_t;
                         actual = 0;
                         currentExist = 0;
                     }
