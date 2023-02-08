@@ -6,7 +6,6 @@
  */
 
 module.exports = meta => {
-   
     
     var actual = 0;
     var currentIndex = 0;
@@ -19,7 +18,6 @@ module.exports = meta => {
     const messageCheck = document.addEventListener("keydown", (e) => {
 
         var currentExist = 0;
-
         const keycode = e.keyCode;
         if (document.activeElement == document.querySelector(".editor-H2NA06") && keycode != 9 && keycode != 38 && keycode != 40) {
             setTimeout(() => {
@@ -51,7 +49,7 @@ module.exports = meta => {
                         currentExist = 0;
                         currentIndex = 0;
                     } else {
-                        acMessageContainer.innerHTML = "<span style='color: #03a1fc; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br>" + aco_t;
+                        acMessageContainer.innerHTML = "<span style='fontWeight: bold; color: #03a1fc;; border-bottom: 1px solid white;'>Autocomplete | Use arrow keys to change, tab to accept.</span><br><br>" + aco_t;
                         actual = 0;
                         currentExist = 0;
                     }
@@ -62,8 +60,6 @@ module.exports = meta => {
         document.querySelectorAll(".autoc-option").forEach(ele => {
             currentExist++;
         })
-
-
 
         if (keycode == 9) {
             if (acMessageContainer.style.display == "block") {
@@ -162,11 +158,10 @@ module.exports = meta => {
         },
         getSettingsPanel: () => {
             const panel = document.createElement("div");
-            panel.innerHTML = `<h1 style="color: white; font-weight: bold;">Autocomplete Options</h1>`
 
             const autocOptions = document.createElement("div");
             const aco_l = document.createElement("span");
-            aco_l.innerHTML = "<br>Autocomplete words (seperated by a new line)<br><br>";
+            aco_l.innerHTML = "Autocomplete words (seperated by a new line)<br><br>";
             aco_l.style.verticalAlign = "middle";
             aco_l.style.marginRight = "15px";
             aco_l.style.color = "white";
@@ -175,6 +170,7 @@ module.exports = meta => {
             aco_i.style.width = "250px"
             aco_i.style.height = "250px"
             aco_i.style.fontSize = "14px"
+            aco_i.setAttribute("spellcheck", "false")
             const aco_b = document.createElement("br");
             const aco_a = document.createElement("button");
             aco_a.innerHTML = "Apply"
