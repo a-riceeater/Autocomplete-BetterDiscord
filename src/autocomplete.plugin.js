@@ -14,6 +14,17 @@ module.exports = meta => {
     acMessageContainer.classList.add("autocomplete-message-container");
     if (document.body.contains(document.querySelector(".form-3gdLxP"))) document.querySelector(".form-3gdLxP").prepend(acMessageContainer);
 
+    let ComponentDispatch;
+    if (!ComponentDispatch) ComponentDispatch = BdApi.Webpack.getModule(m => m.dispatchToLastSubscribed && m.emitter.listeners('INSERT_TEXT').length, { searchExports: true });
+
+    const InsertText = (() => {
+        return (content) => {
+            ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
+                plainText: content
+            });
+        }
+    })();
+
     // Eventlisteners
     const messageCheck = document.addEventListener("keydown", (e) => {
 
@@ -72,15 +83,7 @@ module.exports = meta => {
                         return
                     }
                 })
-                const InsertText = (() => {
-                    let ComponentDispatch;
-                    return (content) => {
-                        if (!ComponentDispatch) ComponentDispatch = BdApi.Webpack.getModule(m => m.dispatchToLastSubscribed && m.emitter.listeners('INSERT_TEXT').length, { searchExports: true });
-                        ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
-                            plainText: content
-                        });
-                    }
-                })();
+                
                 InsertText(selectedText);
                 acMessageContainer.style.display = "none"
             }
